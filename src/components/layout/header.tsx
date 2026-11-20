@@ -2,7 +2,6 @@
 "use client";
 
 import {
-  Bot,
   PanelLeftClose,
   Globe,
   ChevronDown,
@@ -10,6 +9,7 @@ import {
 } from "lucide-react";
 
 import type { Language } from "@/lib/i18n";
+import BrandMark from "@/components/brand-mark";
 import { useState } from "react";
 
 interface HeaderProps {
@@ -58,7 +58,7 @@ export default function Header({
 
         <div className="flex items-center gap-3 text-[15px] font-bold tracking-tight max-[640px]:gap-2 max-[640px]:text-sm max-[360px]:[&>span]:hidden">
           <div className="flex size-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-accent-hover to-accent text-background shadow-md shadow-accent/15">
-            <Bot size={19} />
+            <BrandMark size={19} />
           </div>
           <span>Company AI</span>
         </div>

@@ -4,7 +4,6 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  Bot,
   User,
   Copy,
   Check,
@@ -15,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import type { Language } from "@/lib/i18n";
+import BrandMark from "@/components/brand-mark";
 import { translations } from "@/lib/i18n";
 
 export type Message = {
@@ -151,7 +151,7 @@ export default function MessageBubble({
       dir={isArabic ? "rtl" : "ltr"}
     >
       <div className={`flex size-[38px] min-w-[38px] shrink-0 items-center justify-center rounded-xl border shadow-md max-[640px]:size-8 max-[640px]:min-w-8 max-[640px]:rounded-[10px] ${isAssistant ? "border-accent/25 bg-gradient-to-br from-accent-hover to-accent text-background shadow-accent/15" : "border-white/10 bg-gradient-to-br from-slate-600 to-slate-800 text-foreground"}`}>
-        {isAssistant ? <Bot size={19} /> : <User size={18} />}
+        {isAssistant ? <BrandMark size={19} /> : <User size={18} />}
       </div>
 
       <div

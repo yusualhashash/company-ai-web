@@ -3,7 +3,6 @@
 
 import { useState, type MouseEvent } from "react";
 import {
-  Bot,
   Plus,
   MessageSquare,
   Search,
@@ -16,6 +15,7 @@ import type { CurrentUser, ChatSession } from "@/lib/api";
 import type { Language } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 import UserProfile from "./user-profile";
+import BrandMark from "@/components/brand-mark";
 
 interface SidebarProps {
   currentUser: CurrentUser | null;
@@ -71,7 +71,7 @@ export default function Sidebar({
       <div className="mb-7 flex items-center justify-between">
         <div className="group flex items-center gap-3 text-lg font-bold tracking-tight">
           <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent-hover to-accent text-background shadow-lg shadow-accent/15 transition duration-200 group-hover:-translate-y-0.5 group-hover:shadow-accent/25">
-            <Bot size={22} />
+            <BrandMark size={22} />
           </div>
           <span>Company AI</span>
         </div>

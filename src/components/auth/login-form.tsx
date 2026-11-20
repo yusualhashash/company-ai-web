@@ -3,7 +3,8 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Bot, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import BrandMark from "@/components/brand-mark";
 
 import type { Language } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
@@ -46,7 +47,7 @@ export default function LoginForm({
     >
       <div className="mb-6 flex items-center gap-3.5">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent-hover">
-          <Bot size={23} />
+          <BrandMark size={23} />
         </div>
 
         <div>

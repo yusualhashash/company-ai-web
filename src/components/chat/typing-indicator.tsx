@@ -1,10 +1,10 @@
-import { Bot } from "lucide-react";
+import BrandMark from "@/components/brand-mark";
 
 export default function TypingIndicator() {
   return (
     <div className="mb-6 flex w-full items-start gap-3 max-[640px]:gap-2">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-gradient-to-br from-accent-hover to-accent text-background shadow-md shadow-accent/15 max-[640px]:size-8">
-        <Bot size={19} />
+        <BrandMark size={19} />
       </div>
 
       <div className="min-w-0 flex-1 pt-0.5">
