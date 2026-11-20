@@ -108,7 +108,7 @@ export default function Sidebar({
 
       {/* Conversation history */}
       <div className="mt-7 min-h-0 flex-1 overflow-y-auto pe-0.5 [scrollbar-color:#34394a_transparent] [scrollbar-width:thin]">
-        <p className="mb-3.5 px-2 text-[10px] font-bold tracking-[1.3px] text-muted">
+        <p className="mb-2 px-2 text-[10px] font-bold tracking-[1.3px] text-muted">
           {searchQuery.trim() ? t.searchResults : t.yourConversations}
         </p>
 
@@ -117,11 +117,11 @@ export default function Sidebar({
             filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className={`group mb-1 flex min-h-[52px] items-center gap-2 rounded-xl border p-1.5 transition duration-200 ${sessionId === session.id ? "border-accent/20 bg-accent/[0.08] shadow-sm shadow-accent/5" : "border-transparent hover:border-white/[0.06] hover:bg-white/[0.035]"}`}
+                className={`group mb-0 flex min-h-10 items-center gap-1 rounded-lg border p-0 transition duration-200 ${sessionId === session.id ? "border-accent/20 bg-accent/[0.08] shadow-sm shadow-accent/5" : "border-transparent hover:border-white/[0.06] hover:bg-white/[0.035]"}`}
               >
                 <button
                   type="button"
-                  className={`flex min-h-10 min-w-0 flex-1 items-center gap-3 rounded-lg px-2 py-1.5 text-start text-xs transition disabled:cursor-not-allowed disabled:opacity-50 [&>span:last-child]:truncate ${sessionId === session.id ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
+                  className={`flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-0 text-start text-xs transition disabled:cursor-not-allowed disabled:opacity-50 [&>span:last-child]:truncate ${sessionId === session.id ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
                   onClick={() => onSelectConversation(session)}
                   disabled={isLoading || deletingSessionId !== null}
                   aria-label={`${t.openConversation}: ${session.title}`}
