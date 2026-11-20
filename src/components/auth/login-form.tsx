@@ -70,7 +70,7 @@ export default function LoginForm({
             required
             autoComplete="username"
             dir="ltr"
-            className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted focus:ring-0"
+            className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted focus:ring-0 autofill:shadow-[inset_0_0_0_1000px_var(--color-background)] autofill:[-webkit-text-fill-color:var(--color-foreground)]"
           />
         </div>
 
@@ -88,7 +88,7 @@ export default function LoginForm({
             required
             autoComplete="current-password"
             dir="ltr"
-            className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted focus:ring-0"
+            className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted focus:ring-0 autofill:shadow-[inset_0_0_0_1000px_var(--color-background)] autofill:[-webkit-text-fill-color:var(--color-foreground)]"
           />
 
           <button
@@ -129,7 +129,6 @@ export default function LoginForm({
         </button>
       </form>
 
-      <p className="mb-0 mt-4 text-center text-[11px] text-muted">{t.secureEmployeeAccess}</p>
     </div>
   );
 }

@@ -60,10 +60,10 @@ export const translations = {
     enterPassword: "Enter your password",
     showPassword: "Show password",
     hidePassword: "Hide password",
-    rememberEmail: "Remember my email",
+    rememberEmail: "Remember me",
     signingIn: "Signing in...",
     signInToCompany: "Sign in to Company AI",
-    secureEmployeeAccess: "Secure employee access",
+
 
     // Messages
     you: "You",
@@ -147,10 +147,10 @@ export const translations = {
     enterPassword: "أدخل كلمة المرور",
     showPassword: "إظهار كلمة المرور",
     hidePassword: "إخفاء كلمة المرور",
-    rememberEmail: "تذكر بريدي الإلكتروني",
+    rememberEmail: "تذكرني",
     signingIn: "جارٍ تسجيل الدخول...",
     signInToCompany: "تسجيل الدخول إلى Company AI",
-    secureEmployeeAccess: "دخول آمن للموظفين",
+
 
     // Messages
     you: "أنت",
