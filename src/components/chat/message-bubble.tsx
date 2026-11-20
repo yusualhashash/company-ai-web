@@ -180,47 +180,37 @@ export default function MessageBubble({
               dir="auto"
             />
 
-            <div className="message-edit-footer">
-              <span className="message-edit-hint">
-                {isArabic
-                  ? "Enter للإرسال · Shift + Enter لسطر جديد"
-                  : "Enter to send · Shift + Enter for a new line"}
-              </span>
+        <div className="message-edit-actions">
+          <button
+            type="button"
+            className="message-edit-cancel"
+            onClick={cancelEditing}
+            disabled={isSaving}
+          >
+            <X size={16} />
+            <span>{isArabic ? "إلغاء" : "Cancel"}</span>
+          </button>
 
-              <div className="message-edit-actions">
-                <button
-                  type="button"
-                  className="message-edit-cancel"
-                  onClick={cancelEditing}
-                  disabled={isSaving}
-                  aria-label={t.cancel}
-                  title={t.cancel}
-                >
-                  <X size={17} />
-                  <span>{t.cancel}</span>
-                </button>
+          <button
+            type="button"
+            className="message-edit-send"
+            onClick={() => void saveEdit()}
+            disabled={
+              isSaving ||
+              isLoading ||
+              !editedContent.trim() ||
+              editedContent.trim() === message.content
+            }
+          >
+            {isSaving ? (
+              <span className="edit-button-spinner" />
+            ) : (
+              <ArrowUp size={17} />
+            )}
+            <span>{isArabic ? "إرسال" : "Send"}</span>
+          </button>
+        </div>
 
-                <button
-                  type="button"
-                  className="message-edit-send"
-                  onClick={() => void saveEdit()}
-                  disabled={
-                    isSaving ||
-                    isLoading ||
-                    !editedContent.trim() ||
-                    editedContent.trim() === message.content
-                  }
-                  aria-label={t.saveChanges}
-                  title={t.saveChanges}
-                >
-                  {isSaving ? (
-                    <span className="edit-button-spinner" />
-                  ) : (
-                    <ArrowUp size={19} strokeWidth={2.5} />
-                  )}
-                </button>
-              </div>
-            </div>
           </div>
         ) : (
           <>
