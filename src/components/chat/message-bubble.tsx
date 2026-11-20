@@ -156,7 +156,14 @@ export default function MessageBubble({
         {isAssistant ? <Bot size={19} /> : <User size={18} />}
       </div>
 
-      <div className="message-content">
+      <div
+        className={`message-content ${
+          isEditing
+            ? "w-full min-w-0 !max-w-none !rounded-2xl !border !border-[var(--border)] !bg-transparent !p-0"
+            : ""
+        }`}
+      >
+
         <div className="message-heading">
           <span className="message-author">
             {isAssistant ? "Company AI" : t.you}
@@ -164,10 +171,10 @@ export default function MessageBubble({
         </div>
 
         {isEditing ? (
-          <div className="message-edit-container">
+          <div className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-surface p-3 shadow-lg transition-all duration-200 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 sm:p-4">
             <textarea
               ref={textareaRef}
-              className="message-edit-textarea"
+              className="block min-h-24 max-h-80 w-full resize-none overflow-y-auto rounded-xl border border-transparent bg-transparent p-3 text-sm leading-relaxed text-foreground outline-none transition placeholder:text-muted focus:border-accent/40 focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
               value={editedContent}
               onChange={(event) => {
                 setEditedContent(event.target.value);
@@ -180,37 +187,36 @@ export default function MessageBubble({
               dir="auto"
             />
 
-        <div className="message-edit-actions">
-          <button
-            type="button"
-            className="message-edit-cancel"
-            onClick={cancelEditing}
-            disabled={isSaving}
-          >
-            <X size={16} />
-            <span>{isArabic ? "إلغاء" : "Cancel"}</span>
-          </button>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-surface/70 px-4 py-2.5 text-sm font-medium text-muted transition duration-200 hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                onClick={cancelEditing}
+                disabled={isSaving}
+              >
+                <X size={16} />
+                <span>{isArabic ? "إلغاء" : "Cancel"}</span>
+              </button>
 
-          <button
-            type="button"
-            className="message-edit-send"
-            onClick={() => void saveEdit()}
-            disabled={
-              isSaving ||
-              isLoading ||
-              !editedContent.trim() ||
-              editedContent.trim() === message.content
-            }
-          >
-            {isSaving ? (
-              <span className="edit-button-spinner" />
-            ) : (
-              <ArrowUp size={17} />
-            )}
-            <span>{isArabic ? "إرسال" : "Send"}</span>
-          </button>
-        </div>
-
+              <button
+                type="button"
+                className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-hover)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 sm:w-auto"
+                onClick={() => void saveEdit()}
+                disabled={
+                  isSaving ||
+                  isLoading ||
+                  !editedContent.trim() ||
+                  editedContent.trim() === message.content
+                }
+              >
+                {isSaving ? (
+                  <span className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent" aria-hidden="true" />
+                ) : (
+                  <ArrowUp size={17} />
+                )}
+                <span>{isArabic ? "إرسال" : "Send"}</span>
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -247,7 +253,7 @@ export default function MessageBubble({
       {!isAssistant && !isEditing && onEdit && (
         <button
           type="button"
-          className="message-edit-trigger"
+          className="ms-2 mt-5 inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted opacity-90 transition duration-200 hover:-translate-y-px hover:border-[var(--border)] hover:bg-surface-hover hover:text-foreground active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:mt-7 sm:size-8"
           onClick={startEditing}
           disabled={isLoading}
           title={t.editMessage}
