@@ -66,7 +66,7 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="sidebar" lang={language} dir={isArabic ? "rtl" : "ltr"}>
+    <aside className="sidebar flex h-full w-[275px] shrink-0 flex-col bg-surface" lang={language} dir={isArabic ? "rtl" : "ltr"}>
       {/* Sidebar header */}
       <div className="sidebar-header">
         <div className="brand">

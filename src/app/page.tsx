@@ -467,7 +467,7 @@ export default function Home() {
   // Render application
   return (
     <main
-      className="app-shell"
+      className="app-shell flex h-dvh w-full overflow-hidden bg-background font-sans text-foreground"
       lang={language}
       dir={language === "ar" ? "rtl" : "ltr"}
     >
@@ -488,7 +488,7 @@ export default function Home() {
         />
       )}
 
-      <section className="main-panel">
+      <section className="main-panel relative flex min-w-0 flex-1 flex-col bg-background">
         <Header
           sidebarOpen={sidebarOpen}
           onOpenSidebar={() => setSidebarOpen(true)}

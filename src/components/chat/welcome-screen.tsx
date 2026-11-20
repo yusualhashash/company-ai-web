@@ -53,7 +53,7 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="welcome-screen"
+      className="welcome-screen mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center text-center"
       lang={language}
       dir={isArabic ? "rtl" : "ltr"}
     >

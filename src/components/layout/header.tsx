@@ -43,7 +43,7 @@ export default function Header({
   );
 
   return (
-    <header className="topbar">
+    <header className="topbar flex shrink-0 items-center justify-between bg-surface font-sans">
       <div className="topbar-left">
         {!sidebarOpen && (
           <button
