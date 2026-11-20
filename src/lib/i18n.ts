@@ -49,11 +49,11 @@ export const translations = {
     companyKnowledge: "Company knowledge",
     sendMessage: "Send message",
     disclaimer:
-      "Z AI can make mistakes. Verify important information.",
+      "Last Chance AI can make mistakes. Verify important information.",
 
     // Login
     welcomeBack: "Welcome back",
-    loginSubtitle: "Sign in to your Z AI account",
+    loginSubtitle: "Sign in to your Last Chance AI account",
     emailAddress: "Email address",
     enterEmail: "Enter your email",
     password: "Password",
@@ -62,7 +62,7 @@ export const translations = {
     hidePassword: "Hide password",
     rememberEmail: "Remember me",
     signingIn: "Signing in...",
-    signInToCompany: "Sign in to Z AI",
+    signInToCompany: "Sign in to Last Chance AI",
 
 
     // Messages
@@ -136,11 +136,11 @@ export const translations = {
     companyKnowledge: "معلومات الشركة",
     sendMessage: "إرسال الرسالة",
     disclaimer:
-      "قد يرتكب Z AI أخطاءً. تحقق من المعلومات المهمة.",
+      "قد يرتكب Last Chance AI أخطاءً. تحقق من المعلومات المهمة.",
 
     // Login
     welcomeBack: "مرحباً بعودتك",
-    loginSubtitle: "سجّل الدخول إلى حساب Z AI",
+    loginSubtitle: "سجّل الدخول إلى حساب Last Chance AI",
     emailAddress: "البريد الإلكتروني",
     enterEmail: "أدخل بريدك الإلكتروني",
     password: "كلمة المرور",
@@ -149,7 +149,7 @@ export const translations = {
     hidePassword: "إخفاء كلمة المرور",
     rememberEmail: "تذكرني",
     signingIn: "جارٍ تسجيل الدخول...",
-    signInToCompany: "تسجيل الدخول إلى Z AI",
+    signInToCompany: "تسجيل الدخول إلى Last Chance AI",
 
 
     // Messages

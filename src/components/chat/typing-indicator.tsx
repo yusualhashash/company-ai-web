@@ -8,9 +8,9 @@ export default function TypingIndicator() {
       </div>
 
       <div className="min-w-0 flex-1 pt-0.5">
-        <span className="mb-2 block text-[13px] font-bold text-foreground">Z AI</span>
+        <span className="mb-2 block text-[13px] font-bold text-foreground">Last Chance AI</span>
 
-        <div className="mt-2 flex w-fit min-w-16 items-center gap-1.5 rounded-e-2xl rounded-es-sm rounded-ss-sm border border-accent/15 bg-surface px-4 py-3.5 shadow-md" aria-label="Z AI is typing">
+        <div className="mt-2 flex w-fit min-w-16 items-center gap-1.5 rounded-e-2xl rounded-es-sm rounded-ss-sm border border-accent/15 bg-surface px-4 py-3.5 shadow-md" aria-label="Last Chance AI is typing">
           <span className="size-1.5 animate-bounce rounded-full bg-accent-hover" />
           <span className="size-1.5 animate-bounce rounded-full bg-accent-hover" />
           <span className="size-1.5 animate-bounce rounded-full bg-accent-hover" />
