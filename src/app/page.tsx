@@ -1,8 +1,9 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent, MouseEvent } from "react";
+import { Trash2 } from "lucide-react";
 
 import LoginForm from "@/components/auth/login-form";
 import Sidebar from "@/components/layout/sidebar";
@@ -86,6 +87,21 @@ export default function Home() {
 
   const [deletingSessionId, setDeletingSessionId] =
     useState<string | null>(null);
+  const [pendingDeletion, setPendingDeletion] =
+    useState<ChatSession | null>(null);
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = deleteDialogRef.current;
+
+    if (!dialog) return;
+
+    if (pendingDeletion && !dialog.open) {
+      dialog.showModal();
+    } else if (!pendingDeletion && dialog.open) {
+      dialog.close();
+    }
+  }, [pendingDeletion]);
 
   // Error state
   const [error, setError] = useState("");
@@ -202,8 +218,8 @@ export default function Home() {
     }
   }
 
-  // Delete a conversation
-  async function handleDeleteConversation(
+  // Request conversation deletion
+  function handleDeleteConversation(
     event: MouseEvent<HTMLButtonElement>,
     session: ChatSession
   ) {
@@ -211,11 +227,14 @@ export default function Home() {
 
     if (!currentUser || isLoading || deletingSessionId) return;
 
-    const confirmed = window.confirm(
-      `${t.deleteConversationConfirmation}\n\n${session.title}\n\n${t.deleteConversationWarning}`
-    );
+    setError("");
+    setPendingDeletion(session);
+  }
 
-    if (!confirmed) return;
+  async function confirmDeleteConversation() {
+    const session = pendingDeletion;
+
+    if (!session || !currentUser || isLoading || deletingSessionId) return;
 
     setDeletingSessionId(session.id);
     setError("");
@@ -233,6 +252,8 @@ export default function Home() {
         setSessionId(null);
         setGuestToken(null);
       }
+
+      setPendingDeletion(null);
     } catch (err) {
       console.error("Could not delete conversation:", err);
 
@@ -562,6 +583,55 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {pendingDeletion && (
+        <dialog
+          ref={deleteDialogRef}
+          className="delete-dialog"
+          role="alertdialog"
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+          lang={language}
+          dir={language === "ar" ? "rtl" : "ltr"}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (deletingSessionId === null) setPendingDeletion(null);
+          }}
+        >
+            <div className="delete-dialog-icon" aria-hidden="true">
+              <Trash2 size={21} />
+            </div>
+            <h2 id="delete-dialog-title">
+              {t.deleteConversationConfirmation}
+            </h2>
+            <p className="delete-dialog-session">{pendingDeletion.title}</p>
+            <p id="delete-dialog-description" className="delete-dialog-warning">
+              {t.deleteConversationWarning}
+            </p>
+            {error && <p className="delete-dialog-error" role="alert">{error}</p>}
+            <div className="delete-dialog-actions">
+              <button
+                type="button"
+                autoFocus
+                className="delete-dialog-cancel"
+                onClick={() => setPendingDeletion(null)}
+                disabled={deletingSessionId !== null}
+              >
+                {t.cancel}
+              </button>
+              <button
+                type="button"
+                className="delete-dialog-confirm"
+                onClick={confirmDeleteConversation}
+                disabled={deletingSessionId !== null}
+                aria-busy={deletingSessionId !== null}
+              >
+                <Trash2 size={16} />
+                {deletingSessionId === pendingDeletion.id ? "…" : t.deleteConversation}
+              </button>
+            </div>
+        </dialog>
+      )}
     </main>
   );
 }
