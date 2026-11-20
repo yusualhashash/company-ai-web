@@ -548,10 +548,7 @@ export default function Home() {
 
         <div className="chat-container">
           {messages.length === 0 ? (
-            <WelcomeScreen
-              onSuggestionClick={sendMessage}
-              language={language}
-            />
+            <WelcomeScreen language={language} />
           ) : (
             <MessageList
               messages={messages}
