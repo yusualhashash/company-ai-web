@@ -1,8 +1,9 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent, MouseEvent } from "react";
+import { Trash2 } from "lucide-react";
 
 import LoginForm from "@/components/auth/login-form";
 import Sidebar from "@/components/layout/sidebar";
@@ -66,6 +67,14 @@ export default function Home() {
   // Layout state
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 640px)").matches) {
+      // Synchronize the initial drawer state with the viewport after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSidebarOpen(false);
+    }
+  }, []);
+
   // Authentication state
   const [currentUser, setCurrentUser] =
     useState<CurrentUser | null>(null);
@@ -78,6 +87,21 @@ export default function Home() {
 
   const [deletingSessionId, setDeletingSessionId] =
     useState<string | null>(null);
+  const [pendingDeletion, setPendingDeletion] =
+    useState<ChatSession | null>(null);
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = deleteDialogRef.current;
+
+    if (!dialog) return;
+
+    if (pendingDeletion && !dialog.open) {
+      dialog.showModal();
+    } else if (!pendingDeletion && dialog.open) {
+      dialog.close();
+    }
+  }, [pendingDeletion]);
 
   // Error state
   const [error, setError] = useState("");
@@ -194,8 +218,8 @@ export default function Home() {
     }
   }
 
-  // Delete a conversation
-  async function handleDeleteConversation(
+  // Request conversation deletion
+  function handleDeleteConversation(
     event: MouseEvent<HTMLButtonElement>,
     session: ChatSession
   ) {
@@ -203,11 +227,14 @@ export default function Home() {
 
     if (!currentUser || isLoading || deletingSessionId) return;
 
-    const confirmed = window.confirm(
-      `${t.deleteConversationConfirmation}\n\n${session.title}\n\n${t.deleteConversationWarning}`
-    );
+    setError("");
+    setPendingDeletion(session);
+  }
 
-    if (!confirmed) return;
+  async function confirmDeleteConversation() {
+    const session = pendingDeletion;
+
+    if (!session || !currentUser || isLoading || deletingSessionId) return;
 
     setDeletingSessionId(session.id);
     setError("");
@@ -225,6 +252,8 @@ export default function Home() {
         setSessionId(null);
         setGuestToken(null);
       }
+
+      setPendingDeletion(null);
     } catch (err) {
       console.error("Could not delete conversation:", err);
 
@@ -467,7 +496,7 @@ export default function Home() {
   // Render application
   return (
     <main
-      className="app-shell"
+      className="relative flex h-dvh w-full overflow-hidden bg-background font-sans text-foreground selection:bg-accent selection:text-background [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed"
       lang={language}
       dir={language === "ar" ? "rtl" : "ltr"}
     >
@@ -488,7 +517,7 @@ export default function Home() {
         />
       )}
 
-      <section className="main-panel">
+      <section className="relative flex min-w-0 flex-1 flex-col bg-background">
         <Header
           sidebarOpen={sidebarOpen}
           onOpenSidebar={() => setSidebarOpen(true)}
@@ -517,12 +546,9 @@ export default function Home() {
           />
         )}
 
-        <div className="chat-container">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           {messages.length === 0 ? (
-            <WelcomeScreen
-              onSuggestionClick={sendMessage}
-              language={language}
-            />
+            <WelcomeScreen language={language} />
           ) : (
             <MessageList
               messages={messages}
@@ -533,14 +559,7 @@ export default function Home() {
           )}
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                color: "#ff7777",
-                padding: "12px",
-                textAlign: "center",
-              }}
-            >
+            <div role="alert" className="px-3 py-3 text-center text-red-300">
               {error}
             </div>
           )}
@@ -554,6 +573,55 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {pendingDeletion && (
+        <dialog
+          ref={deleteDialogRef}
+          className="fixed m-auto w-[430px] max-w-[calc(100%_-_32px)] rounded-[22px] border border-white/10 bg-gradient-to-br from-surface-hover to-surface p-[26px] text-foreground shadow-2xl shadow-black/60 backdrop:bg-black/75 backdrop:backdrop-blur-sm max-[480px]:w-[calc(100%_-_28px)] max-[480px]:rounded-[19px] max-[480px]:p-[21px]"
+          role="alertdialog"
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+          lang={language}
+          dir={language === "ar" ? "rtl" : "ltr"}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (deletingSessionId === null) setPendingDeletion(null);
+          }}
+        >
+            <div className="mb-5 flex size-[46px] items-center justify-center rounded-[14px] border border-red-400/25 bg-red-400/10 text-red-300" aria-hidden="true">
+              <Trash2 size={21} />
+            </div>
+            <h2 id="delete-dialog-title" className="m-0 text-[19px] font-bold leading-relaxed tracking-tight">
+              {t.deleteConversationConfirmation}
+            </h2>
+            <p className="mt-3 wrap-anywhere rounded-xl border border-white/10 bg-white/[0.045] px-3.5 py-3 text-[13px] font-semibold leading-relaxed">{pendingDeletion.title}</p>
+            <p id="delete-dialog-description" className="mt-3.5 text-[13px] leading-relaxed text-muted">
+              {t.deleteConversationWarning}
+            </p>
+            {error && <p className="mt-3 text-[13px] leading-relaxed text-red-300" role="alert">{error}</p>}
+            <div className="mt-6 flex justify-end gap-2.5 max-[480px]:gap-2">
+              <button
+                type="button"
+                autoFocus
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.055] px-4 py-2.5 text-[13px] font-semibold text-foreground transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-65 max-[480px]:min-h-[46px] max-[480px]:flex-1 max-[480px]:px-2.5"
+                onClick={() => setPendingDeletion(null)}
+                disabled={deletingSessionId !== null}
+              >
+                {t.cancel}
+              </button>
+              <button
+                type="button"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-700 px-4 py-2.5 text-[13px] font-semibold text-white transition hover:-translate-y-px hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-65 max-[480px]:min-h-[46px] max-[480px]:flex-1 max-[480px]:px-2.5"
+                onClick={confirmDeleteConversation}
+                disabled={deletingSessionId !== null}
+                aria-busy={deletingSessionId !== null}
+              >
+                <Trash2 size={16} />
+                {deletingSessionId === pendingDeletion.id ? "…" : t.deleteConversation}
+              </button>
+            </div>
+        </dialog>
+      )}
     </main>
   );
 }

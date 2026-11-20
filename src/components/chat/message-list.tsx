@@ -38,14 +38,11 @@ export default function MessageList({
   }, [isLoading]);
 
   return (
-    <div className="messages-list">
-      {messages.map((message, index) => (
+    <div className="min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-6 pt-9 pb-[190px] lg:px-[calc((100%-850px)/2)] max-[640px]:px-3.5 max-[640px]:pt-5 max-[640px]:pb-[180px] [scrollbar-color:transparent_transparent] [scrollbar-width:thin]">
+      {messages.map((message) => (
         <div
           key={message.id}
-          className="message-enter-animation"
-          style={{
-            animationDelay: `${Math.min(index * 25, 150)}ms`,
-          }}
+          className="min-w-0"
         >
           <MessageBubble
             message={message}
@@ -57,7 +54,7 @@ export default function MessageList({
       ))}
 
       {isLoading && (
-        <div className="typing-enter-animation">
+        <div className="min-w-0">
           <TypingIndicator />
         </div>
       )}

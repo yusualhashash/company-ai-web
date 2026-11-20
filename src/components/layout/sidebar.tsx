@@ -3,19 +3,18 @@
 
 import { useState, type MouseEvent } from "react";
 import {
-  Bot,
   Plus,
   MessageSquare,
   Search,
   PanelLeftClose,
   Trash2,
-  X,
 } from "lucide-react";
 
 import type { CurrentUser, ChatSession } from "@/lib/api";
 import type { Language } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 import UserProfile from "./user-profile";
+import BrandMark from "@/components/brand-mark";
 
 interface SidebarProps {
   currentUser: CurrentUser | null;
@@ -52,7 +51,6 @@ export default function Sidebar({
   const t = translations[language];
   const isArabic = language === "ar";
 
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredSessions = sessions.filter((session) =>
@@ -61,24 +59,23 @@ export default function Sidebar({
 
   const handleNewChat = () => {
     setSearchQuery("");
-    setSearchOpen(false);
     onNewChat();
   };
 
   return (
-    <aside className="sidebar" lang={language} dir={isArabic ? "rtl" : "ltr"}>
+    <aside className="flex h-full w-[275px] shrink-0 flex-col border-e border-white/10 bg-sidebar p-4 pt-5 max-[900px]:w-[245px] max-[900px]:min-w-[245px] max-[640px]:absolute max-[640px]:inset-y-0 max-[640px]:start-0 max-[640px]:z-20 max-[640px]:w-[calc(100vw_-_56px)] max-[640px]:max-w-[276px] max-[640px]:min-w-0 max-[640px]:shadow-2xl" lang={language} dir={isArabic ? "rtl" : "ltr"}>
       {/* Sidebar header */}
-      <div className="sidebar-header">
-        <div className="brand">
-          <div className="brand-icon">
-            <Bot size={22} />
+      <div className="mb-7 flex items-center justify-between">
+        <div className="group flex items-center gap-3 text-lg font-bold tracking-tight">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent-hover to-accent text-background shadow-lg shadow-accent/15 transition duration-200 group-hover:-translate-y-0.5 group-hover:shadow-accent/25">
+            <BrandMark size={22} />
           </div>
-          <span>Company AI</span>
+          <span>Hashash AI</span>
         </div>
 
         <button
           type="button"
-          className="icon-button sidebar-toggle"
+          className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           onClick={onClose}
           aria-label={t.closeSidebar}
         >
@@ -89,56 +86,29 @@ export default function Sidebar({
       {/* New conversation */}
       <button
         type="button"
-        className="new-chat-button"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-hover to-accent text-sm font-semibold text-background shadow-lg shadow-accent/10 transition hover:-translate-y-0.5 hover:shadow-accent/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         onClick={handleNewChat}
       >
         <Plus size={18} />
         <span>{t.newConversation}</span>
       </button>
 
-      {/* Search conversations */}
-      <button
-        type="button"
-        className={`sidebar-action ${searchOpen ? "search-active" : ""}`}
-        onClick={() => {
-          setSearchOpen((previous) => !previous);
-          setSearchQuery("");
-        }}
-        aria-expanded={searchOpen}
-      >
-        <Search size={17} />
-        <span>{t.searchConversations}</span>
-      </button>
-
-      {searchOpen && (
-        <div className="sidebar-search">
-          <Search size={16} />
-
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder={t.searchPlaceholder}
-            aria-label={t.searchConversations}
-            autoComplete="off"
-          />
-
-          {searchQuery && (
-            <button
-              type="button"
-              className="sidebar-search-clear"
-              onClick={() => setSearchQuery("")}
-              aria-label={t.clearSearch}
-            >
-              <X size={15} />
-            </button>
-          )}
-        </div>
-      )}
+      <div className="mt-3 flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-surface px-3 text-muted transition focus-within:border-accent/50 focus-within:ring-2 focus-within:ring-accent/10">
+        <Search size={17} className="shrink-0" />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder={t.searchPlaceholder}
+          aria-label={t.searchConversations}
+          autoComplete="off"
+          className="w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
+        />
+      </div>
 
       {/* Conversation history */}
-      <div className="history-section">
-        <p className="section-label">
+      <div className="mt-7 min-h-0 flex-1 overflow-y-auto pe-0.5 [scrollbar-color:#34394a_transparent] [scrollbar-width:thin]">
+        <p className="mb-3.5 px-2 text-[10px] font-bold tracking-[1.3px] text-muted">
           {searchQuery.trim() ? t.searchResults : t.yourConversations}
         </p>
 
@@ -147,24 +117,24 @@ export default function Sidebar({
             filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className={`history-item ${
-                  sessionId === session.id ? "active" : ""
-                }`}
+                className={`group mb-1 flex min-h-[52px] items-center gap-2 rounded-xl border p-1.5 transition duration-200 ${sessionId === session.id ? "border-accent/20 bg-accent/[0.08] shadow-sm shadow-accent/5" : "border-transparent hover:border-white/[0.06] hover:bg-white/[0.035]"}`}
               >
                 <button
                   type="button"
-                  className="history-open-button"
+                  className={`flex min-h-10 min-w-0 flex-1 items-center gap-3 rounded-lg px-2 py-1.5 text-start text-xs transition disabled:cursor-not-allowed disabled:opacity-50 [&>span:last-child]:truncate ${sessionId === session.id ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
                   onClick={() => onSelectConversation(session)}
                   disabled={isLoading || deletingSessionId !== null}
                   aria-label={`${t.openConversation}: ${session.title}`}
                 >
-                  <MessageSquare size={16} />
+                  <span className={`flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors ${sessionId === session.id ? "bg-accent/15 text-accent-hover" : "bg-surface text-muted group-hover:text-foreground"}`}>
+                    <MessageSquare size={16} />
+                  </span>
                   <span>{session.title}</span>
                 </button>
 
                 <button
                   type="button"
-                  className="icon-button history-delete"
+                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted opacity-0 transition duration-200 hover:bg-red-500/10 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:size-10 max-[640px]:opacity-100"
                   title={t.deleteConversation}
                   aria-label={`${t.deleteConversation}: ${session.title}`}
                   disabled={isLoading || deletingSessionId !== null}
@@ -173,7 +143,7 @@ export default function Sidebar({
                   }
                 >
                   {deletingSessionId === session.id ? (
-                    <span style={{ fontSize: "11px" }}>...</span>
+                    <span className="text-[11px]">...</span>
                   ) : (
                     <Trash2 size={16} />
                   )}
@@ -181,14 +151,14 @@ export default function Sidebar({
               </div>
             ))
           ) : (
-            <p className="section-label">
+            <p className="mx-1 mt-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-3 py-3.5 text-xs leading-relaxed text-muted">
               {searchQuery.trim()
                 ? t.noMatchingConversations
                 : t.noConversations}
             </p>
           )
         ) : (
-          <p className="section-label">
+          <p className="mx-1 mt-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-3 py-3.5 text-xs leading-relaxed text-muted">
             {isCheckingAuth
               ? t.checkingAccount
               : t.signInToSave}
@@ -197,7 +167,7 @@ export default function Sidebar({
       </div>
 
       {/* User profile */}
-      <div className="sidebar-bottom">
+      <div className="border-t border-white/10 pt-3">
         <UserProfile
           currentUser={currentUser}
           onLogout={onLogout}

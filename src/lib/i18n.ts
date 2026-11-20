@@ -49,21 +49,21 @@ export const translations = {
     companyKnowledge: "Company knowledge",
     sendMessage: "Send message",
     disclaimer:
-      "Company AI can make mistakes. Verify important information.",
+      "Hashash AI can make mistakes. Verify important information.",
 
     // Login
     welcomeBack: "Welcome back",
-    loginSubtitle: "Sign in to your Company AI account",
+    loginSubtitle: "Sign in to your Hashash AI account",
     emailAddress: "Email address",
     enterEmail: "Enter your email",
     password: "Password",
     enterPassword: "Enter your password",
     showPassword: "Show password",
     hidePassword: "Hide password",
-    rememberEmail: "Remember my email",
+    rememberEmail: "Remember me",
     signingIn: "Signing in...",
-    signInToCompany: "Sign in to Company AI",
-    secureEmployeeAccess: "Secure employee access",
+    signInToCompany: "Sign in to Hashash AI",
+
 
     // Messages
     you: "You",
@@ -136,21 +136,21 @@ export const translations = {
     companyKnowledge: "معلومات الشركة",
     sendMessage: "إرسال الرسالة",
     disclaimer:
-      "قد يرتكب Company AI أخطاءً. تحقق من المعلومات المهمة.",
+      "قد يرتكب Hashash AI أخطاءً. تحقق من المعلومات المهمة.",
 
     // Login
     welcomeBack: "مرحباً بعودتك",
-    loginSubtitle: "سجّل الدخول إلى حساب Company AI",
+    loginSubtitle: "سجّل الدخول إلى حساب Hashash AI",
     emailAddress: "البريد الإلكتروني",
     enterEmail: "أدخل بريدك الإلكتروني",
     password: "كلمة المرور",
     enterPassword: "أدخل كلمة المرور",
     showPassword: "إظهار كلمة المرور",
     hidePassword: "إخفاء كلمة المرور",
-    rememberEmail: "تذكر بريدي الإلكتروني",
+    rememberEmail: "تذكرني",
     signingIn: "جارٍ تسجيل الدخول...",
-    signInToCompany: "تسجيل الدخول إلى Company AI",
-    secureEmployeeAccess: "دخول آمن للموظفين",
+    signInToCompany: "تسجيل الدخول إلى Hashash AI",
+
 
     // Messages
     you: "أنت",

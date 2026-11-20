@@ -22,20 +22,20 @@ export default function UserProfile({
 
   return (
     <div
-      className="user-profile"
+      className="flex min-w-0 items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-white/[0.045]"
       lang={language}
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="avatar">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-slate-600 to-slate-800 text-foreground">
         <User size={18} />
       </div>
 
-      <div className="profile-info">
-        <span className="profile-name">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="truncate text-xs font-semibold text-foreground">
           {currentUser ? currentUser.email : t.guestUser}
         </span>
 
-        <span className="profile-role">
+        <span className="text-[10px] text-muted">
           {currentUser ? t.authenticatedUser : t.publicAccess}
         </span>
       </div>
@@ -43,7 +43,7 @@ export default function UserProfile({
       {currentUser ? (
         <button
           type="button"
-          className="icon-button"
+          className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent"
           onClick={onLogout}
           title={t.signOut}
           aria-label={t.signOut}
@@ -51,7 +51,7 @@ export default function UserProfile({
           <LogOut size={17} />
         </button>
       ) : (
-        <Settings size={18} className="settings-icon" />
+        <Settings size={18} className="shrink-0 text-muted" />
       )}
     </div>
   );
