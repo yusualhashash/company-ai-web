@@ -8,7 +8,6 @@ import {
   Search,
   PanelLeftClose,
   Trash2,
-  X,
 } from "lucide-react";
 
 import type { CurrentUser, ChatSession } from "@/lib/api";
@@ -52,7 +51,6 @@ export default function Sidebar({
   const t = translations[language];
   const isArabic = language === "ar";
 
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredSessions = sessions.filter((session) =>
@@ -61,7 +59,6 @@ export default function Sidebar({
 
   const handleNewChat = () => {
     setSearchQuery("");
-    setSearchOpen(false);
     onNewChat();
   };
 
@@ -96,47 +93,18 @@ export default function Sidebar({
         <span>{t.newConversation}</span>
       </button>
 
-      {/* Search conversations */}
-      <button
-        type="button"
-        className={`mt-2 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl border px-3 text-start text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${searchOpen ? "border-accent/20 bg-accent/10 text-accent-hover" : "border-transparent text-muted hover:bg-white/5 hover:text-foreground"}`}
-        onClick={() => {
-          setSearchOpen((previous) => !previous);
-          setSearchQuery("");
-        }}
-        aria-expanded={searchOpen}
-      >
-        <Search size={17} />
-        <span>{t.searchConversations}</span>
-      </button>
-
-      {searchOpen && (
-        <div className="mt-2 flex min-h-10 items-center gap-2 rounded-xl border border-accent/25 bg-white/[0.035] px-3 text-muted focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/10">
-          <Search size={16} />
-
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder={t.searchPlaceholder}
-            aria-label={t.searchConversations}
-            autoComplete="off"
-            className="w-full min-w-0 bg-transparent text-xs text-foreground outline-none placeholder:text-muted"
-
-          />
-
-          {searchQuery && (
-            <button
-              type="button"
-              className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted transition hover:bg-white/10 hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent"
-              onClick={() => setSearchQuery("")}
-              aria-label={t.clearSearch}
-            >
-              <X size={15} />
-            </button>
-          )}
-        </div>
-      )}
+      <div className="mt-3 flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-surface px-3 text-muted transition focus-within:border-accent/50 focus-within:ring-2 focus-within:ring-accent/10">
+        <Search size={17} className="shrink-0" />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder={t.searchPlaceholder}
+          aria-label={t.searchConversations}
+          autoComplete="off"
+          className="w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
+        />
+      </div>
 
       {/* Conversation history */}
       <div className="mt-7 min-h-0 flex-1 overflow-y-auto pe-0.5 [scrollbar-color:#34394a_transparent] [scrollbar-width:thin]">
