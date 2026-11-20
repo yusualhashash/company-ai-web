@@ -45,6 +45,29 @@ export interface ChatResponse {
 
 // ---------- Shared request helper ----------
 
+function getErrorMessage(responseText: string): string {
+  if (!responseText) return "";
+
+  try {
+    const payload: unknown = JSON.parse(responseText);
+
+    if (typeof payload === "string") return payload;
+
+    if (typeof payload === "object" && payload !== null) {
+      const error = payload as Record<string, unknown>;
+
+      for (const key of ["message", "detail", "title", "error"]) {
+        const value = error[key];
+        if (typeof value === "string" && value.trim()) return value;
+      }
+    }
+  } catch {
+    return responseText;
+  }
+
+  return responseText;
+}
+
 async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -72,7 +95,8 @@ async function apiRequest<T>(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `API error: ${response.status}`);
+    const errorMessage = getErrorMessage(errorText);
+    throw new Error(errorMessage || `API error: ${response.status}`);
   }
 
   if (response.status === 204) {
