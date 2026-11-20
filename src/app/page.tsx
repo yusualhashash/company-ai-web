@@ -66,6 +66,14 @@ export default function Home() {
   // Layout state
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 640px)").matches) {
+      // Synchronize the initial drawer state with the viewport after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSidebarOpen(false);
+    }
+  }, []);
+
   // Authentication state
   const [currentUser, setCurrentUser] =
     useState<CurrentUser | null>(null);
