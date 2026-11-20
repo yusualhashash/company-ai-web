@@ -149,22 +149,24 @@ export default function Sidebar({
             filteredSessions.map((session) => (
               <div
                 key={session.id}
-className={`group mb-1 flex min-h-11 items-center gap-1 rounded-xl border px-1 transition ${sessionId === session.id ? "border-accent/20 bg-accent/10 text-foreground" : "border-transparent text-muted hover:bg-white/[0.045]"}`}
+                className={`group mb-1 flex min-h-[52px] items-center gap-2 rounded-xl border p-1.5 transition duration-200 ${sessionId === session.id ? "border-accent/20 bg-accent/[0.08] shadow-sm shadow-accent/5" : "border-transparent hover:border-white/[0.06] hover:bg-white/[0.035]"}`}
               >
                 <button
                   type="button"
-                  className="flex min-h-9 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 py-2 text-start text-xs text-inherit transition hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate [&>svg]:shrink-0 [&>svg]:text-muted"
+                  className={`flex min-h-10 min-w-0 flex-1 items-center gap-3 rounded-lg px-2 py-1.5 text-start text-xs transition disabled:cursor-not-allowed disabled:opacity-50 [&>span:last-child]:truncate ${sessionId === session.id ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
                   onClick={() => onSelectConversation(session)}
                   disabled={isLoading || deletingSessionId !== null}
                   aria-label={`${t.openConversation}: ${session.title}`}
                 >
-                  <MessageSquare size={16} />
+                  <span className={`flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors ${sessionId === session.id ? "bg-accent/15 text-accent-hover" : "bg-surface text-muted group-hover:text-foreground"}`}>
+                    <MessageSquare size={16} />
+                  </span>
                   <span>{session.title}</span>
                 </button>
 
                 <button
                   type="button"
-                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted opacity-0 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:size-10 max-[640px]:opacity-100"
+                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted opacity-0 transition duration-200 hover:bg-red-500/10 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:size-10 max-[640px]:opacity-100"
                   title={t.deleteConversation}
                   aria-label={`${t.deleteConversation}: ${session.title}`}
                   disabled={isLoading || deletingSessionId !== null}
@@ -181,14 +183,14 @@ className={`group mb-1 flex min-h-11 items-center gap-1 rounded-xl border px-1 t
               </div>
             ))
           ) : (
-            <p className="mb-3.5 px-2 text-[10px] font-bold tracking-[1.3px] text-muted">
+            <p className="mx-1 mt-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-3 py-3.5 text-xs leading-relaxed text-muted">
               {searchQuery.trim()
                 ? t.noMatchingConversations
                 : t.noConversations}
             </p>
           )
         ) : (
-          <p className="mb-3.5 px-2 text-[10px] font-bold tracking-[1.3px] text-muted">
+          <p className="mx-1 mt-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-3 py-3.5 text-xs leading-relaxed text-muted">
             {isCheckingAuth
               ? t.checkingAccount
               : t.signInToSave}
