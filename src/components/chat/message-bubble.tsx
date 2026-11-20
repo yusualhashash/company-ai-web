@@ -187,10 +187,10 @@ export default function MessageBubble({
               dir="auto"
             />
 
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <div className="mt-3 flex flex-row gap-2 sm:justify-end">
               <button
                 type="button"
-                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-surface/70 px-4 py-2.5 text-sm font-medium text-muted transition duration-200 hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-surface/70 px-4 py-2.5 text-sm font-medium text-muted transition duration-200 hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:flex-initial"
                 onClick={cancelEditing}
                 disabled={isSaving}
               >
@@ -200,7 +200,7 @@ export default function MessageBubble({
 
               <button
                 type="button"
-                className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-hover)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 sm:w-auto"
+                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-hover)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 sm:w-auto sm:flex-initial"
                 onClick={() => void saveEdit()}
                 disabled={
                   isSaving ||
