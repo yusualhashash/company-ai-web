@@ -54,7 +54,7 @@ export default function MessageList({
       ))}
 
       {isLoading && (
-        <div className="min-w-0">
+        <div className="flex w-full justify-end max-[640px]:justify-start">
           <TypingIndicator />
         </div>
       )}
