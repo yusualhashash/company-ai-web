@@ -49,11 +49,11 @@ export const translations = {
     companyKnowledge: "Company knowledge",
     sendMessage: "Send message",
     disclaimer:
-      "Last Chance AI can make mistakes. Verify important information.",
+      "Hashash AI can make mistakes. Verify important information.",
 
     // Login
     welcomeBack: "Welcome back",
-    loginSubtitle: "Sign in to your Last Chance AI account",
+    loginSubtitle: "Sign in to your Hashash AI account",
     emailAddress: "Email address",
     enterEmail: "Enter your email",
     password: "Password",
@@ -62,7 +62,7 @@ export const translations = {
     hidePassword: "Hide password",
     rememberEmail: "Remember me",
     signingIn: "Signing in...",
-    signInToCompany: "Sign in to Last Chance AI",
+    signInToCompany: "Sign in to Hashash AI",
 
 
     // Messages
@@ -136,11 +136,11 @@ export const translations = {
     companyKnowledge: "معلومات الشركة",
     sendMessage: "إرسال الرسالة",
     disclaimer:
-      "قد يرتكب Last Chance AI أخطاءً. تحقق من المعلومات المهمة.",
+      "قد يرتكب Hashash AI أخطاءً. تحقق من المعلومات المهمة.",
 
     // Login
     welcomeBack: "مرحباً بعودتك",
-    loginSubtitle: "سجّل الدخول إلى حساب Last Chance AI",
+    loginSubtitle: "سجّل الدخول إلى حساب Hashash AI",
     emailAddress: "البريد الإلكتروني",
     enterEmail: "أدخل بريدك الإلكتروني",
     password: "كلمة المرور",
@@ -149,7 +149,7 @@ export const translations = {
     hidePassword: "إخفاء كلمة المرور",
     rememberEmail: "تذكرني",
     signingIn: "جارٍ تسجيل الدخول...",
-    signInToCompany: "تسجيل الدخول إلى Last Chance AI",
+    signInToCompany: "تسجيل الدخول إلى Hashash AI",
 
 
     // Messages

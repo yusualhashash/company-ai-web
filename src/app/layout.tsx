@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Last Chance AI",
-  description: "Last Chance AI, your intelligent company assistant.",
+  title: "Hashash AI",
+  description: "Hashash AI, your intelligent company assistant.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
