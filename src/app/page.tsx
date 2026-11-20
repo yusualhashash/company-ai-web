@@ -15,6 +15,7 @@ import ChatComposer from "@/components/chat/chat-composer";
 import {
   createChatSession,
   sendChatMessage,
+  editChatMessage,
   getMyChatSessions,
   getChatMessages,
   deleteChatSession,
@@ -33,16 +34,10 @@ const REMEMBERED_EMAIL_KEY = "company-ai-remembered-email";
 const LANGUAGE_KEY = "company-ai-language";
 
 export default function Home() {
-
-  
-  // -------------------------------------
   // Language state
-  // -------------------------------------
-
   const [language, setLanguage] = useState<Language>("en");
   const t = translations[language];
 
-  // Restore saved language
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
 
@@ -51,75 +46,51 @@ export default function Home() {
     }
   }, []);
 
-  // Apply language direction
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir =
       language === "ar" ? "rtl" : "ltr";
   }, [language]);
 
-  // Change and immediately save language
   function handleLanguageChange(newLanguage: Language) {
     window.localStorage.setItem(LANGUAGE_KEY, newLanguage);
     setLanguage(newLanguage);
   }
 
-
-  // -------------------------------------
   // Chat state
-  // -------------------------------------
-
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [guestToken, setGuestToken] = useState<string | null>(null);
 
-  // -------------------------------------
   // Layout state
-  // -------------------------------------
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // -------------------------------------
   // Authentication state
-  // -------------------------------------
-
   const [currentUser, setCurrentUser] =
     useState<CurrentUser | null>(null);
 
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // -------------------------------------
   // Conversation state
-  // -------------------------------------
-
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [deletingSessionId, setDeletingSessionId] =
     useState<string | null>(null);
 
-  // -------------------------------------
   // Error state
-  // -------------------------------------
-
   const [error, setError] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // -------------------------------------
   // Login form state
-  // -------------------------------------
-
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberEmail, setRememberEmail] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // -------------------------------------
   // Restore remembered email
-  // -------------------------------------
-
   useEffect(() => {
     const savedEmail = window.localStorage.getItem(
       REMEMBERED_EMAIL_KEY
@@ -131,10 +102,7 @@ export default function Home() {
     }
   }, []);
 
-  // -------------------------------------
   // Restore authentication
-  // -------------------------------------
-
   useEffect(() => {
     let isMounted = true;
 
@@ -163,10 +131,7 @@ export default function Home() {
     };
   }, []);
 
-  // -------------------------------------
   // Load authenticated conversations
-  // -------------------------------------
-
   useEffect(() => {
     if (!currentUser) {
       setSessions([]);
@@ -186,10 +151,7 @@ export default function Home() {
     loadSessions();
   }, [currentUser, language]);
 
-  // -------------------------------------
   // Start a new conversation
-  // -------------------------------------
-
   function startNewChat() {
     setMessages([]);
     setInput("");
@@ -198,10 +160,7 @@ export default function Home() {
     setError("");
   }
 
-  // -------------------------------------
   // Open an existing conversation
-  // -------------------------------------
-
   async function selectConversation(session: ChatSession) {
     if (isLoading || deletingSessionId) return;
 
@@ -235,10 +194,7 @@ export default function Home() {
     }
   }
 
-  // -------------------------------------
   // Delete a conversation
-  // -------------------------------------
-
   async function handleDeleteConversation(
     event: MouseEvent<HTMLButtonElement>,
     session: ChatSession
@@ -282,10 +238,7 @@ export default function Home() {
     }
   }
 
-  // -------------------------------------
   // Login
-  // -------------------------------------
-
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -331,10 +284,7 @@ export default function Home() {
     }
   }
 
-  // -------------------------------------
   // Logout
-  // -------------------------------------
-
   async function handleLogout() {
     try {
       await logout();
@@ -353,10 +303,7 @@ export default function Home() {
     }
   }
 
-  // -------------------------------------
-  // Send a message
-  // -------------------------------------
-
+  // Send a new message
   async function sendMessage(messageText: string) {
     const text = messageText.trim();
 
@@ -378,7 +325,6 @@ export default function Home() {
       let currentSessionId = sessionId;
       let currentGuestToken = guestToken;
 
-      // Create a session if necessary.
       if (!currentSessionId) {
         const sessionResponse = await createChatSession();
 
@@ -400,26 +346,27 @@ export default function Home() {
         }
       }
 
-      // Send the message to the backend.
-      const response = await sendChatMessage(
+      await sendChatMessage(
         currentSessionId,
         text,
         undefined,
         currentGuestToken ?? undefined
       );
 
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: response.answer,
-      };
+      const savedMessages = await getChatMessages(
+        currentSessionId,
+        undefined,
+        currentGuestToken ?? undefined
+      );
 
-      setMessages((previous) => [
-        ...previous,
-        assistantMessage,
-      ]);
+      setMessages(
+        savedMessages.map((message) => ({
+          id: message.id,
+          role: message.role as Message["role"],
+          content: message.content,
+        }))
+      );
 
-      // Refresh authenticated conversation history.
       if (currentUser) {
         const updatedSessions = await getMyChatSessions("");
         setSessions(updatedSessions);
@@ -437,17 +384,93 @@ export default function Home() {
     }
   }
 
-  // -------------------------------------
-  // Render application
-  // -------------------------------------
+  // Edit and resend a user message
+  async function handleEditMessage(
+    messageId: string,
+    newContent: string
+  ) {
+    if (!sessionId || isLoading) return;
 
+    const text = newContent.trim();
+
+    if (!text) return;
+
+    // Keep a copy so we can restore the conversation if sending fails.
+    const previousMessages = [...messages];
+
+    const editedMessageIndex = previousMessages.findIndex(
+      (message) => message.id === messageId
+    );
+
+    if (editedMessageIndex === -1) return;
+
+    setError("");
+    setIsLoading(true);
+
+    // Immediately hide all messages after the edited message.
+    // Also display the new text optimistically.
+    const updatedMessages = previousMessages
+      .slice(0, editedMessageIndex + 1)
+      .map((message) =>
+        message.id === messageId
+          ? { ...message, content: text }
+          : message
+      );
+
+    setMessages(updatedMessages);
+
+    try {
+      await editChatMessage(
+        sessionId,
+        messageId,
+        text,
+        guestToken ?? undefined
+      );
+
+      // Load the final conversation from the backend.
+      const savedMessages = await getChatMessages(
+        sessionId,
+        undefined,
+        guestToken ?? undefined
+      );
+
+      setMessages(
+        savedMessages.map((message) => ({
+          id: message.id,
+          role: message.role as Message["role"],
+          content: message.content,
+        }))
+      );
+
+      if (currentUser) {
+        const updatedSessions = await getMyChatSessions("");
+        setSessions(updatedSessions);
+      }
+    } catch (err) {
+      console.error("Could not edit message:", err);
+
+      // Restore the original conversation if the request fails.
+      setMessages(previousMessages);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : t.genericError
+      );
+
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Render application
   return (
     <main
       className="app-shell"
       lang={language}
       dir={language === "ar" ? "rtl" : "ltr"}
     >
-      {/* Sidebar */}
       {sidebarOpen && (
         <Sidebar
           currentUser={currentUser}
@@ -465,9 +488,7 @@ export default function Home() {
         />
       )}
 
-      {/* Main panel */}
       <section className="main-panel">
-        {/* Header */}
         <Header
           sidebarOpen={sidebarOpen}
           onOpenSidebar={() => setSidebarOpen(true)}
@@ -478,10 +499,9 @@ export default function Home() {
             setShowLogin((previous) => !previous);
           }}
           language={language}
-          onLanguageChange={handleLanguageChange}      
+          onLanguageChange={handleLanguageChange}
         />
 
-        {/* Login form */}
         {showLogin && !currentUser && (
           <LoginForm
             email={email}
@@ -497,7 +517,6 @@ export default function Home() {
           />
         )}
 
-        {/* Chat */}
         <div className="chat-container">
           {messages.length === 0 ? (
             <WelcomeScreen
@@ -509,10 +528,10 @@ export default function Home() {
               messages={messages}
               isLoading={isLoading}
               language={language}
+              onEditMessage={handleEditMessage}
             />
           )}
 
-          {/* API errors */}
           {error && (
             <div
               role="alert"
@@ -526,7 +545,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Message composer */}
           <ChatComposer
             value={input}
             onChange={setInput}

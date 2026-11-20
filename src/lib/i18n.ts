@@ -70,6 +70,11 @@ export const translations = {
     copy: "Copy",
     copied: "Copied",
     copyResponse: "Copy response",
+    editMessage: "Edit message",
+    saveChanges: "Save changes",
+    cancel: "Cancel",
+    resendingMessage: "Resending...",
+    editMessagePlaceholder: "Edit your message...",
 
     // Errors and confirmations
     loadConversationsError: "Could not load your conversations.",
@@ -152,6 +157,11 @@ export const translations = {
     copy: "نسخ",
     copied: "تم النسخ",
     copyResponse: "نسخ الرد",
+    editMessage: "تعديل الرسالة",
+    saveChanges: "حفظ التعديلات",
+    cancel: "إلغاء",
+    resendingMessage: "جارٍ إعادة الإرسال...",
+    editMessagePlaceholder: "عدّل رسالتك...",
 
     // Errors and confirmations
     loadConversationsError: "تعذّر تحميل محادثاتك.",

@@ -174,3 +174,25 @@ export async function sendChatMessage(
     guestToken
   );
 }
+
+
+export async function editChatMessage(
+  sessionId: string,
+  messageId: string,
+  message: string,
+  guestToken?: string
+): Promise<ChatResponse> {
+  return apiRequest<ChatResponse>(
+    "/api/chat/edit",
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        sessionId,
+        messageId,
+        message,
+      }),
+    },
+    undefined,
+    guestToken
+  );
+}
