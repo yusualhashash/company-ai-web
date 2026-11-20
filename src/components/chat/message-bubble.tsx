@@ -146,32 +146,26 @@ export default function MessageBubble({
 
   return (
     <article
-      className={`message-row ${message.role} ${
-        isEditing ? "message-editing" : ""
-      }`}
+      className={`group mb-8 flex items-start gap-4 max-[640px]:mb-6 max-[640px]:gap-2 ${isAssistant ? "ml-auto w-fit max-w-full flex-row-reverse max-[640px]:ml-0 max-[640px]:w-full max-[640px]:flex-row" : ""}`}
       lang={language}
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="message-avatar">
+      <div className={`flex size-[38px] min-w-[38px] shrink-0 items-center justify-center rounded-xl border shadow-md max-[640px]:size-8 max-[640px]:min-w-8 max-[640px]:rounded-[10px] ${isAssistant ? "border-accent/25 bg-gradient-to-br from-accent-hover to-accent text-background shadow-accent/15" : "border-white/10 bg-gradient-to-br from-slate-600 to-slate-800 text-foreground"}`}>
         {isAssistant ? <Bot size={19} /> : <User size={18} />}
       </div>
 
       <div
-        className={`message-content ${
-          isEditing
-            ? "w-full min-w-0 !max-w-none !rounded-2xl !border !border-[var(--border)] !bg-transparent !p-0"
-            : ""
-        }`}
-      >
+        className={`min-w-0 flex-1 pt-0.5 ${isEditing ? "w-full !max-w-none !rounded-2xl !border-0 !bg-transparent !p-0" : isAssistant ? "max-w-[min(85%,700px)]" : "max-w-[min(80%,650px)] rounded-[4px_15px_15px_15px] border border-white/10 bg-gradient-to-br from-surface-hover to-surface px-4 py-3 max-[640px]:max-w-[82%] max-[640px]:px-3 max-[640px]:py-2.5"}`}>
 
-        <div className="message-heading">
-          <span className="message-author">
+
+        <div className={`mb-2.5 flex min-h-6 items-center justify-between gap-3 ${isAssistant ? "justify-end" : "max-[640px]:mb-2"}`}>
+          <span className={`block text-[13px] font-bold tracking-[0.1px] ${isAssistant ? "text-foreground" : "text-muted"}`}>
             {isAssistant ? "Company AI" : t.you}
           </span>
         </div>
 
         {isEditing ? (
-          <div className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-surface p-3 shadow-lg transition-all duration-200 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 sm:p-4">
+          <div className="mt-2 w-full rounded-2xl border border-border bg-surface p-3 shadow-lg transition-all duration-200 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 sm:p-4">
             <textarea
               ref={textareaRef}
               className="block min-h-24 max-h-80 w-full resize-none overflow-y-auto rounded-xl border border-transparent bg-transparent p-3 text-sm leading-relaxed text-foreground outline-none transition placeholder:text-muted focus:border-accent/40 focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
@@ -190,7 +184,7 @@ export default function MessageBubble({
             <div className="mt-3 flex flex-row gap-2 sm:justify-end">
               <button
                 type="button"
-                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-surface/70 px-4 py-2.5 text-sm font-medium text-muted transition duration-200 hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:flex-initial"
+                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2.5 text-sm font-medium text-muted transition duration-200 hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:flex-initial"
                 onClick={cancelEditing}
                 disabled={isSaving}
               >
@@ -200,7 +194,7 @@ export default function MessageBubble({
 
               <button
                 type="button"
-                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-hover)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 sm:w-auto sm:flex-initial"
+                className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 sm:w-auto sm:flex-initial"
                 onClick={() => void saveEdit()}
                 disabled={
                   isSaving ||
@@ -220,18 +214,18 @@ export default function MessageBubble({
           </div>
         ) : (
           <>
-            <div className="markdown-content" dir="auto">
+            <div className="break-words text-sm leading-[1.85] text-[#d5dbea] max-[640px]:text-[14px] max-[640px]:leading-[1.7] [&_p]:mb-3.5 [&_p:last-child]:mb-0 [&_p]:whitespace-pre-wrap [&_strong]:font-bold [&_strong]:text-foreground [&_em]:italic [&_h1]:my-4 [&_h1]:text-[21px] [&_h2]:my-3 [&_h2]:text-lg [&_h3]:my-3 [&_h3]:text-base [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h1]:leading-relaxed [&_h2]:leading-relaxed [&_h3]:leading-relaxed [&_ul]:my-3 [&_ul]:list-disc [&_ul]:ps-6 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_li]:mb-2 [&_li::marker]:text-accent-hover [&_a]:text-accent-hover [&_a]:underline [&_code]:rounded-md [&_code]:border [&_code]:border-accent/15 [&_code]:bg-accent/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-background [&_pre]:p-4 [&_pre]:leading-relaxed [&_pre_code]:border-0 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_table]:my-4 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_th]:border [&_th]:border-border [&_th]:bg-accent/10 [&_th]:p-2.5 [&_td]:border [&_td]:border-border [&_td]:p-2.5">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {message.content}
               </ReactMarkdown>
             </div>
 
             {isAssistant && (
-              <div className="message-footer">
-                <div className="message-actions">
+              <div className="mt-2.5 flex w-full items-center justify-start">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="message-copy-button"
+                    className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] text-muted opacity-0 transition hover:bg-accent/10 hover:text-accent-hover focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent group-hover:opacity-100 max-[640px]:opacity-100"
                     onClick={copyMessage}
                     title={t.copyResponse}
                     aria-label={t.copyResponse}
@@ -253,7 +247,7 @@ export default function MessageBubble({
       {!isAssistant && !isEditing && onEdit && (
         <button
           type="button"
-          className="ms-2 mt-5 inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted opacity-90 transition duration-200 hover:-translate-y-px hover:border-[var(--border)] hover:bg-surface-hover hover:text-foreground active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:mt-7 sm:size-8"
+          className="ms-2 mt-5 inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted opacity-90 transition duration-200 hover:-translate-y-px hover:border-border hover:bg-surface-hover hover:text-foreground active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:mt-7 sm:size-8"
           onClick={startEditing}
           disabled={isLoading}
           title={t.editMessage}
