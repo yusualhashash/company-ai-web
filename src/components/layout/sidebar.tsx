@@ -73,7 +73,7 @@ export default function Sidebar({
           <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent-hover to-accent text-background shadow-lg shadow-accent/15 transition duration-200 group-hover:-translate-y-0.5 group-hover:shadow-accent/25">
             <BrandMark size={22} />
           </div>
-          <span>Company AI</span>
+          <span>Z AI</span>
         </div>
 
         <button

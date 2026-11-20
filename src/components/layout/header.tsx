@@ -60,7 +60,7 @@ export default function Header({
           <div className="flex size-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-accent-hover to-accent text-background shadow-md shadow-accent/15">
             <BrandMark size={19} />
           </div>
-          <span>Company AI</span>
+          <span>Z AI</span>
         </div>
       </div>
 

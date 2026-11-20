@@ -160,7 +160,7 @@ export default function MessageBubble({
 
         <div className={`mb-2.5 flex min-h-6 items-center justify-between gap-3 ${isAssistant ? "justify-end" : "max-[640px]:mb-2"}`}>
           <span className={`block text-[13px] font-bold tracking-[0.1px] ${isAssistant ? "text-foreground" : "text-muted"}`}>
-            {isAssistant ? "Company AI" : t.you}
+            {isAssistant ? "Z AI" : t.you}
           </span>
         </div>
 
