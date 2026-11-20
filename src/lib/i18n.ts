@@ -31,8 +31,8 @@ export const translations = {
 
     // Welcome screen
     welcomeTitle: "How can I help you today?",
-    welcomeDescription:
-      "Ask me about our company, services, projects, or anything you would like to know.",
+   // welcomeDescription:
+    //  "Ask me about our company, services, projects, or anything you would like to know.",
     companyServices: "Company services",
     companyServicesDescription:
       "What services does our company provide?",
@@ -118,8 +118,8 @@ export const translations = {
 
     // Welcome screen
     welcomeTitle: "كيف يمكنني مساعدتك اليوم؟",
-    welcomeDescription:
-      "اسألني عن شركتنا أو خدماتنا أو مشاريعنا أو أي شيء ترغب في معرفته.",
+    // welcomeDescription:
+    //   "اسألني عن شركتنا أو خدماتنا أو مشاريعنا أو أي شيء ترغب في معرفته.",
     companyServices: "خدمات الشركة",
     companyServicesDescription:
       "ما الخدمات التي تقدمها شركتنا؟",
