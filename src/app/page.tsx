@@ -1,69 +1,541 @@
-import Image from "next/image";
+
+"use client";
+
+import { useEffect, useState } from "react";
+import type { FormEvent, MouseEvent } from "react";
+
+import LoginForm from "@/components/auth/login-form";
+import Sidebar from "@/components/layout/sidebar";
+import Header from "@/components/layout/header";
+
+import WelcomeScreen from "@/components/chat/welcome-screen";
+import MessageList from "@/components/chat/message-list";
+import ChatComposer from "@/components/chat/chat-composer";
+
+import {
+  createChatSession,
+  sendChatMessage,
+  getMyChatSessions,
+  getChatMessages,
+  deleteChatSession,
+  login,
+  getCurrentUser,
+  logout,
+  type CurrentUser,
+  type ChatSession,
+  type ChatMessage,
+} from "@/lib/api";
+
+import type { Message } from "@/components/chat/message-bubble";
+import { translations, type Language } from "@/lib/i18n";
+
+const REMEMBERED_EMAIL_KEY = "company-ai-remembered-email";
+const LANGUAGE_KEY = "company-ai-language";
 
 export default function Home() {
+
+  
+  // -------------------------------------
+  // Language state
+  // -------------------------------------
+
+  const [language, setLanguage] = useState<Language>("en");
+  const t = translations[language];
+
+  // Restore saved language
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
+
+    if (savedLanguage === "en" || savedLanguage === "ar") {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  // Apply language direction
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir =
+      language === "ar" ? "rtl" : "ltr";
+  }, [language]);
+
+  // Change and immediately save language
+  function handleLanguageChange(newLanguage: Language) {
+    window.localStorage.setItem(LANGUAGE_KEY, newLanguage);
+    setLanguage(newLanguage);
+  }
+
+
+  // -------------------------------------
+  // Chat state
+  // -------------------------------------
+
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [guestToken, setGuestToken] = useState<string | null>(null);
+
+  // -------------------------------------
+  // Layout state
+  // -------------------------------------
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // -------------------------------------
+  // Authentication state
+  // -------------------------------------
+
+  const [currentUser, setCurrentUser] =
+    useState<CurrentUser | null>(null);
+
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // -------------------------------------
+  // Conversation state
+  // -------------------------------------
+
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [deletingSessionId, setDeletingSessionId] =
+    useState<string | null>(null);
+
+  // -------------------------------------
+  // Error state
+  // -------------------------------------
+
+  const [error, setError] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  // -------------------------------------
+  // Login form state
+  // -------------------------------------
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberEmail, setRememberEmail] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // -------------------------------------
+  // Restore remembered email
+  // -------------------------------------
+
+  useEffect(() => {
+    const savedEmail = window.localStorage.getItem(
+      REMEMBERED_EMAIL_KEY
+    );
+
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberEmail(true);
+    }
+  }, []);
+
+  // -------------------------------------
+  // Restore authentication
+  // -------------------------------------
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function restoreAuthentication() {
+      try {
+        const user = await getCurrentUser();
+
+        if (isMounted) {
+          setCurrentUser(user);
+        }
+      } catch {
+        if (isMounted) {
+          setCurrentUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    }
+
+    restoreAuthentication();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // -------------------------------------
+  // Load authenticated conversations
+  // -------------------------------------
+
+  useEffect(() => {
+    if (!currentUser) {
+      setSessions([]);
+      return;
+    }
+
+    async function loadSessions() {
+      try {
+        const data = await getMyChatSessions("");
+        setSessions(data);
+      } catch (err) {
+        console.error("Could not load conversations:", err);
+        setError(t.loadConversationsError);
+      }
+    }
+
+    loadSessions();
+  }, [currentUser, language]);
+
+  // -------------------------------------
+  // Start a new conversation
+  // -------------------------------------
+
+  function startNewChat() {
+    setMessages([]);
+    setInput("");
+    setSessionId(null);
+    setGuestToken(null);
+    setError("");
+  }
+
+  // -------------------------------------
+  // Open an existing conversation
+  // -------------------------------------
+
+  async function selectConversation(session: ChatSession) {
+    if (isLoading || deletingSessionId) return;
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const data: ChatMessage[] = await getChatMessages(session.id);
+
+      setMessages(
+        data.map((message) => ({
+          id: message.id,
+          role: message.role as Message["role"],
+          content: message.content,
+        }))
+      );
+
+      setSessionId(session.id);
+      setGuestToken(null);
+      setInput("");
+    } catch (err) {
+      console.error("Could not load conversation:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : t.loadConversationError
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // -------------------------------------
+  // Delete a conversation
+  // -------------------------------------
+
+  async function handleDeleteConversation(
+    event: MouseEvent<HTMLButtonElement>,
+    session: ChatSession
+  ) {
+    event.stopPropagation();
+
+    if (!currentUser || isLoading || deletingSessionId) return;
+
+    const confirmed = window.confirm(
+      `${t.deleteConversationConfirmation}\n\n${session.title}\n\n${t.deleteConversationWarning}`
+    );
+
+    if (!confirmed) return;
+
+    setDeletingSessionId(session.id);
+    setError("");
+
+    try {
+      await deleteChatSession(session.id, "");
+
+      setSessions((previous) =>
+        previous.filter((item) => item.id !== session.id)
+      );
+
+      if (sessionId === session.id) {
+        setMessages([]);
+        setInput("");
+        setSessionId(null);
+        setGuestToken(null);
+      }
+    } catch (err) {
+      console.error("Could not delete conversation:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : t.deleteError
+      );
+    } finally {
+      setDeletingSessionId(null);
+    }
+  }
+
+  // -------------------------------------
+  // Login
+  // -------------------------------------
+
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!email.trim() || !password) return;
+
+    setIsLoggingIn(true);
+    setLoginError("");
+
+    try {
+      await login(email.trim(), password);
+
+      const user = await getCurrentUser();
+
+      setCurrentUser(user);
+
+      if (rememberEmail) {
+        window.localStorage.setItem(
+          REMEMBERED_EMAIL_KEY,
+          email.trim()
+        );
+      } else {
+        window.localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      }
+
+      setSessionId(null);
+      setGuestToken(null);
+      setMessages([]);
+      setInput("");
+      setPassword("");
+      setLoginError("");
+      setError("");
+      setShowLogin(false);
+    } catch (err) {
+      console.error("Login failed:", err);
+
+      setLoginError(
+        err instanceof Error
+          ? err.message
+          : t.loginError
+      );
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }
+
+  // -------------------------------------
+  // Logout
+  // -------------------------------------
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    } finally {
+      setCurrentUser(null);
+      setSessions([]);
+      setSessionId(null);
+      setGuestToken(null);
+      setMessages([]);
+      setInput("");
+      setError("");
+      setLoginError("");
+      setShowLogin(false);
+    }
+  }
+
+  // -------------------------------------
+  // Send a message
+  // -------------------------------------
+
+  async function sendMessage(messageText: string) {
+    const text = messageText.trim();
+
+    if (!text || isLoading) return;
+
+    setInput("");
+    setError("");
+    setIsLoading(true);
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: text,
+    };
+
+    setMessages((previous) => [...previous, userMessage]);
+
+    try {
+      let currentSessionId = sessionId;
+      let currentGuestToken = guestToken;
+
+      // Create a session if necessary.
+      if (!currentSessionId) {
+        const sessionResponse = await createChatSession();
+
+        currentSessionId = sessionResponse.session.id;
+        currentGuestToken = sessionResponse.guestToken ?? null;
+
+        if (!currentUser && !currentGuestToken) {
+          throw new Error(t.guestTokenError);
+        }
+
+        setSessionId(currentSessionId);
+        setGuestToken(currentGuestToken);
+
+        if (currentUser) {
+          setSessions((previous) => [
+            sessionResponse.session,
+            ...previous,
+          ]);
+        }
+      }
+
+      // Send the message to the backend.
+      const response = await sendChatMessage(
+        currentSessionId,
+        text,
+        undefined,
+        currentGuestToken ?? undefined
+      );
+
+      const assistantMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: response.answer,
+      };
+
+      setMessages((previous) => [
+        ...previous,
+        assistantMessage,
+      ]);
+
+      // Refresh authenticated conversation history.
+      if (currentUser) {
+        const updatedSessions = await getMyChatSessions("");
+        setSessions(updatedSessions);
+      }
+    } catch (err) {
+      console.error("Chat API error:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : t.genericError
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // -------------------------------------
+  // Render application
+  // -------------------------------------
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main
+      className="app-shell"
+      lang={language}
+      dir={language === "ar" ? "rtl" : "ltr"}
+    >
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <Sidebar
+          currentUser={currentUser}
+          isCheckingAuth={isCheckingAuth}
+          sessions={sessions}
+          sessionId={sessionId}
+          isLoading={isLoading}
+          language={language}
+          deletingSessionId={deletingSessionId}
+          onNewChat={startNewChat}
+          onSelectConversation={selectConversation}
+          onDeleteConversation={handleDeleteConversation}
+          onLogout={handleLogout}
+          onClose={() => setSidebarOpen(false)}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+      )}
+
+      {/* Main panel */}
+      <section className="main-panel">
+        {/* Header */}
+        <Header
+          sidebarOpen={sidebarOpen}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          isAuthenticated={!!currentUser}
+          isCheckingAuth={isCheckingAuth}
+          onToggleLogin={() => {
+            setLoginError("");
+            setShowLogin((previous) => !previous);
+          }}
+          language={language}
+          onLanguageChange={handleLanguageChange}      
+        />
+
+        {/* Login form */}
+        {showLogin && !currentUser && (
+          <LoginForm
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            rememberEmail={rememberEmail}
+            setRememberEmail={setRememberEmail}
+            isLoggingIn={isLoggingIn}
+            error={loginError}
+            onSubmit={handleLogin}
+            language={language}
+          />
+        )}
+
+        {/* Chat */}
+        <div className="chat-container">
+          {messages.length === 0 ? (
+            <WelcomeScreen
+              onSuggestionClick={sendMessage}
+              language={language}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ) : (
+            <MessageList
+              messages={messages}
+              isLoading={isLoading}
+              language={language}
+            />
+          )}
+
+          {/* API errors */}
+          {error && (
+            <div
+              role="alert"
+              style={{
+                color: "#ff7777",
+                padding: "12px",
+                textAlign: "center",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Message composer */}
+          <ChatComposer
+            value={input}
+            onChange={setInput}
+            onSend={sendMessage}
+            language={language}
+            isLoading={isLoading}
+          />
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
