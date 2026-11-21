@@ -204,6 +204,7 @@ export async function editChatMessage(
   sessionId: string,
   messageId: string,
   message: string,
+  token?: string,
   guestToken?: string
 ): Promise<ChatResponse> {
   return apiRequest<ChatResponse>(
@@ -216,7 +217,7 @@ export async function editChatMessage(
         message,
       }),
     },
-    undefined,
+    token,
     guestToken
   );
 }

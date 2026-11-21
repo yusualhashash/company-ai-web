@@ -36,16 +36,21 @@ const LANGUAGE_KEY = "company-ai-language";
 
 export default function Home() {
   // Language state
-  const [language, setLanguage] = useState<Language>("en");
-  const t = translations[language];
+// Language state
+const [language, setLanguage] = useState<Language>("en");
+const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
 
-  useEffect(() => {
-    const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
+const t = translations[language];
 
-    if (savedLanguage === "en" || savedLanguage === "ar") {
-      setLanguage(savedLanguage);
-    }
-  }, []);
+useEffect(() => {
+  const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
+
+  if (savedLanguage === "en" || savedLanguage === "ar") {
+    setLanguage(savedLanguage);
+  }
+
+  setIsLanguageLoaded(true);
+}, []);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -449,12 +454,13 @@ export default function Home() {
     setMessages(updatedMessages);
 
     try {
-      await editChatMessage(
-        sessionId,
-        messageId,
-        text,
-        guestToken ?? undefined
-      );
+          await editChatMessage(
+            sessionId,
+            messageId,
+            text,
+            undefined,
+            guestToken ?? undefined
+          );
 
       // Load the final conversation from the backend.
       const savedMessages = await getChatMessages(
@@ -494,8 +500,17 @@ export default function Home() {
   }
 
   // Render application
+// Render application
+if (!isLanguageLoaded) {
   return (
-    <main
+    <main className="flex h-dvh w-full items-center justify-center bg-background">
+      <div className="size-8 animate-spin rounded-full border-2 border-accent/20 border-t-accent" />
+    </main>
+  );
+}
+
+return (
+  <main
       className="relative flex h-dvh w-full overflow-hidden bg-background font-sans text-foreground selection:bg-accent selection:text-background [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed"
       lang={language}
       dir={language === "ar" ? "rtl" : "ltr"}
